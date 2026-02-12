@@ -1,39 +1,39 @@
-Endterm Project – Spring Boot REST API
+# Endterm Project – Spring Boot REST API  
+Design Patterns • Component Principles • SOLID • RESTful Architecture
 
-Design Patterns, Component Principles & SOLID Architecture
+---
 
-A. Project Overview
+## 1. Project Overview
 
-This project is a Spring Boot RESTful API developed as a continuation of previous assignments (JDBC + SOLID + Advanced OOP).
+This project is a Spring Boot RESTful API developed as a continuation of previous assignments (JDBC, Exception Handling, SOLID, Advanced OOP).
 
 The system demonstrates:
 
-Implementation of Design Patterns (Singleton, Factory, Builder)
+- Creational Design Patterns (Singleton, Factory, Builder)
+- Component Principles (REP, CCP, CRP)
+- SOLID principles
+- Layered architecture (Controller → Service → Repository → Database)
+- RESTful CRUD endpoints
+- Database integration
+- Global exception handling
+- UML documentation
+- Postman API testing
 
-Application of Component Principles (REP, CCP, CRP)
+The project represents a professional backend architecture integrating OOP theory with real REST API implementation.
 
-Usage of SOLID principles
+---
 
-Layered architecture (Controller – Service – Repository – Database)
+## 2. REST API Documentation
 
-CRUD operations via REST API
-
-Database integration (PostgreSQL / MySQL / SQLite)
-
-Global exception handling
-
-UML documentation
-
-The system represents a structured backend application that supports entity management and simulated game/fighting logic.
-
-B. REST API Documentation
-Base URL
+### Base URL
 http://localhost:8080/api
-1. Create Entity
+
+---
+
+### Create Warrior
 POST /api/warriors
 
-Request Body (JSON)
-
+Request:
 {
   "name": "Thor",
   "level": 5,
@@ -42,8 +42,7 @@ Request Body (JSON)
   "weaponType": "Hammer"
 }
 
-Response
-
+Response:
 {
   "id": 1,
   "name": "Thor",
@@ -52,189 +51,172 @@ Response
   "armor": 40,
   "weaponType": "Hammer"
 }
-2. Get All Warriors
+
+---
+
+### Get All Warriors
 GET /api/warriors
 
-Response
+---
 
-[
-  {
-    "id": 1,
-    "name": "Thor",
-    "level": 5,
-    "strength": 80,
-    "armor": 40,
-    "weaponType": "Hammer"
-  }
-]
-3. Get Warrior by ID
+### Get Warrior by ID
 GET /api/warriors/{id}
-4. Update Warrior
+
+---
+
+### Update Warrior
 PUT /api/warriors/{id}
-5. Delete Warrior
+
+---
+
+### Delete Warrior
 DELETE /api/warriors/{id}
-6. Simulate Fight
+
+---
+
+### Fight Simulation
 POST /api/fight
+
+Request:
 {
   "attackerId": 1,
   "defenderId": 2
 }
 
 Response:
-
 {
   "winner": "Thor",
-  "damageDealt": 35
+  "damageDealt": 35,
+  "rounds": 3
 }
-C. Design Patterns Section
-1. Singleton Pattern
+
+---
+
+## 3. Design Patterns Implementation
+
+### Singleton Pattern
 
 Used for:
-
-DatabaseConfig
-
-LoggingService
+- Database configuration
+- Logging service
+- Application configuration manager
 
 Purpose:
-Ensures a single instance across the application.
-
-Example usage:
-
-Shared database connection manager
-
-Centralized logging
-
-Why used:
-
-Prevents multiple configurations
-
-Improves resource control
-
-2. Factory Pattern
-
-Used to create subclasses of base entity:
+Ensures a single shared instance across the application.
 
 Example:
+DatabaseConfig config = DatabaseConfig.getInstance();
 
-GameEntity
+Benefits:
+- Controlled resource usage
+- Centralized configuration
 
-Warrior
+---
 
-Mage
+### Factory Pattern
 
-Archer
+Used to create subclasses of a base entity.
 
-Factory returns base type:
+Structure:
+GameEntity (abstract)
+  ├── Warrior
+  ├── Mage
+  └── Archer
 
+Example:
 GameEntity entity = EntityFactory.createEntity("warrior");
 
-Why used:
+Benefits:
+- Decouples object creation
+- Easy extension
+- Supports Open/Closed Principle
 
-Decouples object creation from business logic
+---
 
-Makes system extensible
+### Builder Pattern
 
-3. Builder Pattern
-
-Used for creating complex objects:
+Used for constructing complex objects with optional parameters.
 
 Example:
-
 Warrior warrior = Warrior.builder()
-        .name("Thor")
-        .level(5)
-        .strength(80)
-        .armor(40)
-        .weaponType("Hammer")
-        .build();
+    .name("Thor")
+    .level(5)
+    .strength(80)
+    .armor(40)
+    .weaponType("Hammer")
+    .build();
 
-Why used:
+Benefits:
+- Fluent API
+- Clean object construction
+- Avoids constructor overloading
 
-Supports optional parameters
+---
 
-Improves readability
+## 4. Component Principles
 
-Avoids constructor overloads
-
-D. Component Principles
-REP – Reuse/Release Equivalence Principle
-
+### REP – Reuse/Release Equivalence Principle
 Reusable modules:
+- repository
+- service
+- patterns
+- utils
 
-repository
+Each package has clear responsibility.
 
-service
-
-patterns
-
-utils
-
-Each module has clear responsibility.
-
-CCP – Common Closure Principle
-
+### CCP – Common Closure Principle
 Classes that change together are grouped together:
+- Controller → REST logic
+- Service → Business logic
+- Repository → Database logic
 
-All database logic → repository
-
-All business logic → service
-
-All REST endpoints → controller
-
-CRP – Common Reuse Principle
-
+### CRP – Common Reuse Principle
 Modules do not depend on unnecessary classes.
+- Controller does not access database directly.
+- Service depends on repository abstraction.
 
-For example:
+---
 
-Controller does not access repository directly.
+## 5. SOLID Principles in the Project
 
-Service does not depend on controller.
+Single Responsibility Principle:
+Each class has one responsibility.
 
-E. SOLID & OOP Summary
-S – Single Responsibility
+Open/Closed Principle:
+Factory allows extension without modifying existing code.
 
-Each class has one responsibility:
+Liskov Substitution Principle:
+Subclasses (Warrior, Mage) can replace GameEntity.
 
-Controller handles HTTP
+Interface Segregation Principle:
+Separate interfaces like Combatant and Progressable.
 
-Service handles business logic
-
-Repository handles database
-
-O – Open/Closed
-
-Factory allows extension without modifying base class.
-
-L – Liskov Substitution
-
-All subclasses (Warrior, Mage) can replace GameEntity.
-
-I – Interface Segregation
-
-Combatant, Progressable interfaces are separated.
-
-D – Dependency Inversion
-
+Dependency Inversion Principle:
 Service depends on repository interface, not concrete implementation.
 
-F. Database Schema
+---
+
+## 6. Database Schema
 
 Example table:
 
-Warrior
--------
-id (PK)
-name
-level
-strength
-armor
-weapon_type
-created_date
+warriors
+--------
+id INT PRIMARY KEY
+name VARCHAR(50)
+level INT
+experience INT
+strength INT
+armor INT
+weapon_type VARCHAR(50)
+created_date TIMESTAMP
 
-Relationships handled via foreign keys if needed.
+Database used:
+PostgreSQL / MySQL / SQLite
 
-G. System Architecture Diagram
+---
+
+## 7. System Architecture
 
 Layered Architecture:
 
@@ -248,23 +230,78 @@ Repository
         ↓
 Database
 
-Includes:
+Project Structure:
 
-DTO layer
+controller/
+service/
+repository/
+model/
+dto/
+exception/
+patterns/
+utils/
 
-Exception handler
+This structure reflects SOLID and component principles.
 
-Patterns package
+---
 
-UML Diagram provided in /docs/uml.png
+## 8. UML Class Structure (Text Representation)
 
-H. How to Run the Application
+GameEntity
+  ├── id
+  ├── name
+  ├── level
+  ├── experience
+  └── createdDate
+        ▲
+        │
+     Warrior
+  ├── strength
+  ├── armor
+  └── weaponType
 
-Clone repository
+Interfaces:
 
-Configure application.properties
+Combatant
+  ├── attack()
+  └── defend()
 
-Example:
+Progressable
+  └── levelUp()
+
+Patterns:
+
+EntityFactory → creates → GameEntity  
+WarriorBuilder → builds → Warrior  
+DatabaseConfig → Singleton  
+
+---
+
+## 9. Global Exception Handling
+
+Implemented using:
+@ControllerAdvice
+@ExceptionHandler
+
+Example error response:
+
+{
+  "timestamp": "2026-02-12T09:00:00",
+  "status": 404,
+  "message": "Warrior not found",
+  "path": "/api/warriors/999"
+}
+
+---
+
+## 10. How to Run the Application
+
+Requirements:
+- Java 17+
+- Maven
+- PostgreSQL (recommended)
+
+application.properties example:
 
 spring.datasource.url=jdbc:postgresql://localhost:5432/endterm_db
 spring.datasource.username=postgres
@@ -275,170 +312,22 @@ Run:
 
 mvn spring-boot:run
 
-or run Application.java.
+Or run Application.java from IDE.
 
 Test endpoints using Postman.
 
-I. Global Exception Handling
+---
 
-Implemented using:
-
-@ControllerAdvice
-
-@ExceptionHandler
-
-Example response:
-
-{
-  "timestamp": "2026-02-10T12:00:00",
-  "message": "Warrior not found",
-  "status": 404
-}
-J. Reflection
+## 11. Reflection
 
 During this project:
 
-I learned how to transform a layered Java application into a REST API.
+- I transformed a layered Java application into a professional REST API.
+- I implemented Singleton, Factory, and Builder patterns in a real backend system.
+- I structured the project using REP, CCP, and CRP principles.
+- I maintained SOLID architecture.
+- I integrated database operations with RESTful services.
 
-I applied real design patterns in a practical system.
+This project demonstrates full integration of:
 
-I structured the project using component principles.
-
-I maintained SOLID architecture in Spring Boot.
-
-I integrated database operations with RESTful services.
-
-I improved understanding of professional backend development.
-
-This project demonstrates a complete backend architecture combining:
-Design Patterns + SOLID + Component Principles + REST API.
-
-
-📌 UML Class Diagram (Endterm Project)
-1️⃣ Main classes
-+--------------------+
-|     GameEntity     |
-+--------------------+
-| - id: int          |
-| - name: String     |
-| - level: int       |
-| - experience: int  |
-| - createdDate      |
-+--------------------+
-| + levelUp()        |
-+--------------------+
-           ▲
-           |
-+--------------------+
-|      Warrior       |
-+--------------------+
-| - strength: int    |
-| - armor: int       |
-| - weaponType: String|
-+--------------------+
-| + attack()         |
-| + defend()         |
-+--------------------+
-2️⃣ Interfaces (ISP – Interface Segregation)
-+----------------+
-|  Combatant     |
-+----------------+
-| + attack()     |
-| + defend()     |
-+----------------+
-
-
-+----------------+
-| Progressable   |
-+----------------+
-| + levelUp()    |
-+----------------+
-
-Warrior implements:
-
-Warrior → Combatant
-Warrior → Progressable
-3️⃣ Factory Pattern
-+-----------------------+
-|     EntityFactory     |
-+-----------------------+
-| + createEntity(type)  |
-+-----------------------+
-
-Returns:
-
-GameEntity
-   ▲
-   |
-Warrior / Mage / Archer
-
-📌 Связь:
-Factory → создает → GameEntity
-
-4️⃣ Builder Pattern
-+-----------------------+
-|      WarriorBuilder   |
-+-----------------------+
-| - name                |
-| - level               |
-| - strength            |
-| - armor               |
-| - weaponType          |
-+-----------------------+
-| + name()              |
-| + level()             |
-| + strength()          |
-| + armor()             |
-| + weaponType()        |
-| + build()             |
-+-----------------------+
-
-
-
-WarriorBuilder → builds → Warrior
-5️⃣ Singleton Pattern
-+-----------------------+
-|   DatabaseConfig      |
-+-----------------------+
-| - instance            |
-+-----------------------+
-| + getInstance()       |
-| + getConnection()     |
-+-----------------------+
-
-
-
-6️⃣ Layered Architecture (Component Principles)
-+----------------+
-|   Controller   |
-+----------------+
-        ↓
-+----------------+
-|    Service     |
-+----------------+
-        ↓
-+----------------+
-|   Repository   |
-+----------------+
-        ↓
-+----------------+
-|    Database    |
-+----------------+
-7️⃣ REST Structure UML
-WarriorController
-    ↓
-WarriorService
-    ↓
-WarriorRepository
-    ↓
-Database
-
- Package Structure (REP / CCP / CRP)
-controller/
-service/
-repository/
-model/
-dto/
-exception/
-patterns/
-utils/
+Design Patterns + SOLID + Component Principles + RESTful API + Database.
