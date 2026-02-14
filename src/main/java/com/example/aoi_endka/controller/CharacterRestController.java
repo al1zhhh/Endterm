@@ -32,12 +32,8 @@ public class CharacterRestController {
      */
     @GetMapping
     public ResponseEntity<List<GameEntity>> getAllCharacters() {
-        try {
-            List<GameEntity> characters = characterService.getAllCharacters();
-            return ResponseEntity.ok(characters);
-        } catch (DatabaseOperationException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+        List<GameEntity> characters = characterService.getAllCharacters();
+        return ResponseEntity.ok(characters);
     }
 
     /**
@@ -147,6 +143,11 @@ public class CharacterRestController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
+    }
+    @DeleteMapping("/cache")
+    public String clearCache() {
+        characterService.clearCache();
+        return "Cache cleared";
     }
 
 

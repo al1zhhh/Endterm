@@ -1,5 +1,6 @@
 package com.example.aoi_endka.service;
 
+import com.example.aoi_endka.cache.SimpleCashe;
 import com.example.aoi_endka.exceptions.DatabaseOperationException;
 import com.example.aoi_endka.exceptions.InvalidInputException;
 import com.example.aoi_endka.exceptions.ResourceNotFoundException;
@@ -16,8 +17,11 @@ import com.example.aoi_endka.patterns.singleton.LoggingService;
 import com.example.aoi_endka.patterns.singleton.ConfigurationManager;
 import org.springframework.stereotype.Service;
 
+
 @Service
 public class CharacterService {
+    private static final String CACHE_KEY_ALL = "characters:all";
+    private final SimpleCashe cache = SimpleCashe.getInstance();
     private final LoggingService logger = LoggingService.getInstance();
     private final ConfigurationManager config = ConfigurationManager.getInstance();
     private CharacterRepository characterRepository;
@@ -29,6 +33,7 @@ public class CharacterService {
 
     public int createCharacter(GameEntity entity) throws InvalidInputException, DatabaseOperationException {
         logger.info("Creating character: " + entity.getName());
+        cache.invalidate(CACHE_KEY_ALL);
 
         // Валидация с использованием конфигурации
         int maxLevel = config.getIntProperty("character.max.level", 100);
@@ -48,10 +53,20 @@ public class CharacterService {
     /**
      * Get all characters
      */
-    public List<GameEntity> getAllCharacters() throws DatabaseOperationException {
-        return characterRepository.getAll();
-    }
+    public List<GameEntity> getAllCharacters() {
 
+        return cache.get(CACHE_KEY_ALL, List.class)
+                .map(v -> (List<GameEntity>) v)
+                .orElseGet(() -> {
+                    try {
+                        List<GameEntity> list = characterRepository.getAll();
+                        cache.put(CACHE_KEY_ALL, list);
+                        return list;
+                    } catch (DatabaseOperationException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
+    }
     /**
      * Get character by ID
      */
@@ -66,11 +81,13 @@ public class CharacterService {
     public void updateCharacter(int id, GameEntity character) throws InvalidInputException, DatabaseOperationException, ResourceNotFoundException {
         validateCharacter(character);
         characterRepository.update(id, character);
+        cache.invalidate(CACHE_KEY_ALL);
     }
 
 
     public void deleteCharacter(int id) throws DatabaseOperationException, ResourceNotFoundException {
         characterRepository.delete(id);
+        cache.invalidate(CACHE_KEY_ALL);
     }
 
 
@@ -167,5 +184,8 @@ public class CharacterService {
                 throw new InvalidInputException("Critical chance must be between 0 and 1");
             }
         }
+    }
+    public void clearCache() {
+        cache.invalidate(CACHE_KEY_ALL);
     }
 }
